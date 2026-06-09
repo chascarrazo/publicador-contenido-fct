@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicador Automático - FCT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Estilos generales y fondo animado */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #333;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Contenedor estilo Glassmorphism */
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin: 20px;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header-section h2 {
+            margin: 0;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .header-section p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* Estilos de los campos del formulario */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #34495e;
+        }
+
+        .input-with-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            color: #95a5a6;
+            z-index: 2;
+        }
+
+        /* Ajuste específico para centrar verticalmente el icono en inputs estándar */
+        .input-with-icon input[type="text"], 
+        .input-with-icon select {
+            padding-left: 42px;
+        }
+
+        /* Corrección del icono del input file para que no se pise */
+        .file-icon {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        input[type="file"] {
+            padding: 12px 12px 12px 42px; /* Margen izquierdo corregido */
+            background: #fdfdfd;
+        }
+
+        /* Adaptación para el icono del área de texto */
+        .textarea-icon {
+            top: 18px; 
+        }
+
+        textarea {
+            padding: 12px 12px 12px 42px;
+        }
+
+        input[type="text"], textarea, input[type="file"] {
+            width: 100%;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus, textarea:focus, input[type="file"]:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+        }
+
+        /* Estilos para la selección múltiple de redes sociales */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .checkbox-card {
+            background: #f8f9fa;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            padding: 12px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #7f8c8d;
+        }
+
+        .checkbox-card i {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+            transition: transform 0.2s;
+        }
+
+        /* Ocultamos el checkbox real, usaremos la tarjeta como interfaz */
+        .checkbox-card input[type="checkbox"] {
+            display: none;
+        }
+
+        /* Cambios de estilo cuando el checkbox está marcado */
+        .checkbox-card:has(input:checked) {
+            border-color: #3498db;
+            background-color: #ebf5fb;
+            color: #2980b9;
+        }
+
+        .checkbox-card:has(input:checked) i {
+            transform: scale(1.1);
+        }
+
+        /* Colores de marca al seleccionar */
+        .checkbox-card:has(#facebook:checked) { border-color: #1877f2; color: #1877f2; background-color: #e8f0fe; }
+        .checkbox-card:has(#instagram:checked) { border-color: #e1306c; color: #e1306c; background-color: #fdf0f5; }
+        .checkbox-card:has(#twitter:checked) { border-color: #1da1f2; color: #1da1f2; background-color: #e8f6fe; }
+
+        /* Botón */
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <div class="header-section">
+        <h2><i class="fa-solid fa-rocket"></i> Content Hub</h2>
+        <p>Publicador automatizado para redes sociales</p>
+    </div>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="username">Remitente</label>
+            <div class="input-with-icon">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="username" name="username" placeholder="Tu nombre o departamento" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="caption">Descripción de la publicación</label>
+            <div class="input-with-icon">
+                <i class="fa-solid fa-comment-dots textarea-icon"></i>
+                <textarea id="caption" name="caption" rows="4" placeholder="¡Escribe un texto genial para acompañar la imagen!" required></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="imageFile">Imagen a publicar</label>
+            <div class="input-with-icon">
+                <i class="fa-solid fa-image file-icon"></i>
+                <input type="file" id="imageFile" name="imageFile" accept="image/*" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>¿Dónde quieres publicar?</label>
+            <div class="checkbox-group">
+                
+                <label class="checkbox-card">
+                    <input type="checkbox" id="facebook" name="platforms" value="facebook">
+                    <i class="fa-brands fa-facebook"></i>
+                    Facebook
+                </label>
+
+                <label class="checkbox-card">
+                    <input type="checkbox" id="instagram" name="platforms" value="instagram">
+                    <i class="fa-brands fa-instagram"></i>
+                    Instagram
+                </label>
+
+                <label class="checkbox-card">
+                    <input type="checkbox" id="twitter" name="platforms" value="twitter">
+                    <i class="fa-brands fa-x-twitter"></i>
+                    Twitter / X
+                </label>
+
+            </div>
+        </div>
+
+        <button type="submit" id="submitBtn">
+            <i class="fa-solid fa-paper-plane"></i> Enviar al flujo
+        </button>
+    </form>
+    <div id="message"></div>
+</div>
+
+<script>
+    const form = document.getElementById('uploadForm');
+    const messageDiv = document.getElementById('message');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Validación: Asegurar que al menos una red social esté marcada
+        const checkedPlatforms = document.querySelectorAll('input[name="platforms"]:checked');
+        if (checkedPlatforms.length === 0) {
+            messageDiv.style.display = 'block';
+            messageDiv.style.backgroundColor = '#f8d7da';
+            messageDiv.style.color = '#721c24';
+            messageDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Debes seleccionar al menos una red social.';
+            return;
+        }
+        
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
+        submitBtn.disabled = true;
+        
+        messageDiv.style.display = 'block';
+        messageDiv.style.backgroundColor = '#fff3cd';
+        messageDiv.style.color = '#856404';
+        messageDiv.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> Conectando con n8n...';
+
+        // URL del Webhook de n8n (La rellenaremos en el Bloque 2)
+        const webhookUrl = 'AQUI_IRA_TU_URL_DE_N8N'; 
+
+        const formData = new FormData(form);
+
+        // JavaScript enviará de forma nativa un array con las redes seleccionadas.
+        try {
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                messageDiv.style.backgroundColor = '#d4edda';
+                messageDiv.style.color = '#155724';
+                messageDiv.innerHTML = '<i class="fa-solid fa-circle-check"></i> ¡Publicación enviada con éxito!';
+                form.reset();
+            } else {
+                throw new Error('Error en el servidor');
+            }
+        } catch (error) {
+            messageDiv.style.backgroundColor = '#f8d7da';
+            messageDiv.style.color = '#721c24';
+            messageDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error de conexión con n8n. Revisa tu webhook.';
+        } finally {
+            submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar al flujo';
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>
